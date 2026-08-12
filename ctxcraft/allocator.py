@@ -19,7 +19,11 @@ class TokenCounter:
         for message in messages:
             num_tokens += 3
             for key, value in message.items():
+                if not isinstance(value, str):
+                    continue
                 num_tokens += self.count_text(value)
+                if key == "name":
+                    num_tokens -= 1
         num_tokens += 3
         return num_tokens
 
@@ -52,7 +56,7 @@ class ContextBudget:
 
         self.sys_budget = int(self.total_input_budget * sys_p)
         self.rag_budget = int(self.total_input_budget * rag_p)
-        self.his_budget = int(self.total_input_budget * his_p)
+        self.his_budget = self.total_input_budget - self.sys_budget - self.rag_budget
 
     def summary(self) -> Dict[str,int]:
         return {
