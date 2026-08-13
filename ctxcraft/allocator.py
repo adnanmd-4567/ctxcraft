@@ -1,13 +1,20 @@
 from typing import Dict, List, Union, Optional
+from functools import lru_cache
 import tiktoken
+
+TOTAL_PCT_TOLERANCE = 0.01
+
+@lru_cache(maxsize=8)
+def _get_encoder(model_name: str):
+    try:
+        return tiktoken.encoding_for_model(model_name)
+    except KeyError:
+        return tiktoken.get_encoding("cl100k_base")
 
 class TokenCounter:
     def __init__(self, model_name: str = "gpt-4o"):
         self.model_name = model_name
-        try:
-            self.encoder = tiktoken.encoding_for_model(model_name)
-        except KeyError:
-            self.encoder = tiktoken.get_encoding("cl100k_base")
+        self.encoder = _get_encoder(model_name)
 
     def count_text(self, text: str) -> int:
         if not text:
@@ -44,8 +51,10 @@ class ContextBudget:
         # his_p: history_percentage
         
         total_pct = sys_p + rag_p + his_p
-        if not (0.99 <= total_pct <= 1.01):
-            raise ValueError("total_pct must be 1.0")
+        if not (1.0 - TOTAL_PCT_TOLERANCE <= total_pct <= 1.0 + TOTAL_PCT_TOLERANCE):
+            raise ValueError(
+                f"his_p + sys_p + rag_p must sum up to 1.0 (±{TOTAL_PCT_TOLERANCE}), got {total_pct}"
+            )
 
         self.max_con_win = max_con_win
         self.res_out_tok = res_out_tok
