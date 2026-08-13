@@ -11,7 +11,6 @@ def test_prune_history_budget():
         {"role": "user", "content": "Turn 2: " + "aura_maxing " * 50},
         {"role": "assistant", "content": "Reply 2: " + "bark " * 50},
     ]
-
     pruned = compactor.prune_history(messages, max_tokens=100)
     assert len(pruned) < len(messages)
     assert pruned[-1]["content"] == messages[-1]["content"]
