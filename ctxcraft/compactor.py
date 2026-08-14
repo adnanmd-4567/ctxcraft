@@ -71,15 +71,22 @@ class Compactor:
         content = msg.get("content", "")
         if not isinstance(content, str) or not content:
             return None
+
         encoded = self.counter.encoder.encode(content)
         if len(encoded) <= token_budget:
             return msg
 
-        suffix = "..[truncated]"
-        suffix_tokens = len(self.counter.encoder.encode(suffix))
-        keep = max(token_budget - suffix_tokens, 0)
-        truncated_text = self.counter.encoder.decode(encoded[:keep]) + suffix
-        return {**msg, "content": truncated_text}
+        suffix = "...[truncated]"
+        keep = token_budget
+
+        while keep > 0:
+            candidate_text = self.counter.encoder.decode(encoded[:keep]) + suffix
+            candidate_msg = {**msg, "content": candidate_text}
+            if self.counter.count_messages([candidate_msg]) <= token_budget:
+                return candidate_msg
+            keep -= 5
+
+        return None
 
 # messages = [
 #          {"role": "user", "content": "Turn 1: " + "brainrot " * 50},
