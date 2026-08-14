@@ -1,4 +1,5 @@
 import pytest
+from typing import List, Dict, Optional
 from ctxcraft.allocator import TokenCounter, ContextBudget
 
 def test_token_counter_basic_text():
@@ -34,8 +35,5 @@ def test_context_budget():
 def test_invalid_budget_percentage():
     with pytest.raises(ValueError):
         ContextBudget(sys_p=0.8, rag_p=0.8, his_p=0.8)
-
-from typing import List, Dict, Optional
-from ctxcraft.allocator import TokenCounter
 
 

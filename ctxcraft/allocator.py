@@ -4,6 +4,7 @@ import tiktoken
 
 TOTAL_PCT_TOLERANCE = 0.01
 
+# reuses the cached encoder obj
 @lru_cache(maxsize=8)
 def _get_encoder(model_name: str):
     try:

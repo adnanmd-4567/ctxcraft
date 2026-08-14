@@ -71,11 +71,11 @@ class Compactor:
         content = msg.get("content", "")
         if not isinstance(content, str) or not content:
             return None
-
+        
         encoded = self.counter.encoder.encode(content)
         if len(encoded) <= token_budget:
             return msg
-
+                
         suffix = "...[truncated]"
         keep = token_budget
 
