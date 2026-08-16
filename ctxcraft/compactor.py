@@ -99,15 +99,3 @@ class Compactor:
             max_tokens= budget.his_budget,
             preserve_n=preserve_n,
         )
-
-messages = [
-         {"role": "user", "content": "Turn 1: " + "brainrot " * 50},
-         {"role": "assistant", "content": "Reply 1: " + "meow " * 50},
-         {"role": "user", "content": "Turn 2: " + "aura_maxing " * 50},
-         {"role": "assistant", "content": "Reply 2: " + "bark " * 50},
-     ]
-new = Compactor()
-print(new.prune_history(messages=messages, max_tokens=130, preserve_n=1))
-print(new.prune_to_budget)
-
-
