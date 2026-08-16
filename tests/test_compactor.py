@@ -108,6 +108,13 @@ def test_preserve_n_still_respected_alongside_truncation(compactor):
     assert result[0]["role"] == "system"
     assert result[0]["content"] == "God is punishing me for my sins"
 
+def test_prune_to_budget_uses_history_budget(compactor):
+    budget = ContextBudget(max_con_win=128000, res_out_tok=1000, sys_p=0.2, rag_p=0.3, his_p=0.5)
+    messages = [{"role": "user", "content": "word " * 500}]
+    result = compactor.prune_to_budget(messages, budget, preserve_n=0)
+    counted = compactor.counter.count_messages(result)
+    assert counted <= budget.his_budget
+
 
 
 
